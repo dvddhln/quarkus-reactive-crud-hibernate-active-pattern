@@ -1,0 +1,28 @@
+myapp:
+  flyway:
+    migrate: true
+quarkus:
+  log:
+    level: INFO
+  hibernate-orm:
+    database:
+      generation: drop-and-create
+    log:
+      sql: true
+    dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    jdbc:
+      timezone: UTC
+  datasource:
+    db-kind: postgresql
+    username: user
+    password: password
+    jdbc: false
+    reactive:
+      url: postgresql://localhost:5432/my_db
+      max-size: 20
+#"%prod":
+#  quarkus:
+#    hibernate-orm:
+#      sql-load-script: no-file
+#      database:
+#        generation: none

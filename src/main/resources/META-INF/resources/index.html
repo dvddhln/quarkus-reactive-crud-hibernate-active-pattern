@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>CRUD Mission - Quarkus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"/>
+    <style>
+        input[type=number] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            -webkit-transition: .5s;
+            transition: .5s;
+            outline: 0;
+            font-family: 'Open Sans', serif;
+        }
+    </style>
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+      var app = angular.module("ProductManagement", []);
+
+      //Controller Part
+      app.controller("ProductManagementController", function ($scope, $http) {
+
+        //Initialize page with default data which is blank in this example
+        $scope.products = [];
+
+        $scope.form = {
+          id: -1,
+          name: ""
+        };
+
+        //Now load the data from server
+        _refreshPageData();
+
+        //HTTP POST/PUT methods for add/edit products
+        $scope.update = function () {
+          var method = "";
+          var url = "";
+          var data = {};
+          if ($scope.form.id == -1) {
+            //Id is absent so add products - POST operation
+            method = "POST";
+            url = '/v1/products';
+            data.description = $scope.form.name;
+          } else {
+            //If Id is present, it's edit operation - PUT operation
+            method = "PUT";
+            url = '/v1/products/' + $scope.form.id;
+            data.description = $scope.form.name;
+          }
+
+          $http({
+            method: method,
+            url: url,
+            data: angular.toJson(data),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }).then(_success, _error);
+        };
+
+        //HTTP DELETE- delete product by id
+        $scope.remove = function (product) {
+          $http({
+            method: 'DELETE',
+            url: '/v1/products/' + product.id
+          }).then(_success, _error);
+        };
+
+        //In case of edit products, populate form with product data
+        $scope.edit = function (product) {
+          $scope.form.name = product.description;
+          $scope.form.id = product.id;
+        };
+
+          /* Private Methods */
+        //HTTP GET- get all products collection
+        function _refreshPageData() {
+          $http({
+            method: 'GET',
+            url: '/v1/products'
+          }).then(function successCallback(response) {
+            $scope.products = response.data;
+          }, function errorCallback(response) {
+            console.log(response.statusText);
+          });
+        }
+
+        function _success(response) {
+          _refreshPageData();
+          _clearForm()
+        }
+
+        function _error(response) {
+          alert(response.data.message || response.statusText);
+        }
+
+        //Clear the form
+        function _clearForm() {
+          $scope.form.name = "";
+          $scope.form.id = -1;
+        }
+      });
+    </script>
+</head>
+<body ng-app="ProductManagement" ng-controller="ProductManagementController">
+
+<div class="container">
+    <h1>CRUD Mission - Quarkus</h1>
+    <p>This application demonstrates how a Quarkus application implements a CRUD endpoint to manage products.
+        This management interface invokes the CRUD service endpoint, which interacts with a database using JPA and several other well known libraries.
+    </p>
+    <p>Behind the scenes, we have:
+    <ul>
+        <li>Hibernate Reactive taking care of all CRUD operations</li>
+        <li>RESTEasy Reactive powering the REST API</li>
+        <li>ArC, a CDI based dependency injection framework</li>
+        <li>The Undertow webserver</li>
+        <li>Some magic bytecode generation plugged in the compiler...</li>
+    </ul>
+    </p>
+
+    <h3>Add/Edit a product</h3>
+    <form ng-submit="update()">
+        <div class="row">
+            <div class="col-10"><input type="text" placeholder="Name" ng-model="form.name" size="60"/></div>
+        </div>
+        <input type="submit" value="Save"/>
+    </form>
+
+    <h3>Product List</h3>
+    <div class="row">
+        <div class="col-2">Id</div>
+        <div class="col-2">Name</div>
+        <div class="col-2">Updated At</div>
+        <div class="col-2">Created At</div>
+    </div>
+    <div class="row" ng-repeat="product in products">
+        <div class="col-2">{{ product.id }}</div>
+        <div class="col-2">{{ product.description }}</div>
+        <div class="col-2">{{ product.updatedAt }}</div>
+        <div class="col-2">{{ product.createdAt }}</div>
+        <div class="col-4"><a ng-click="edit( product )" class="btn">Edit</a> <a ng-click="remove( product )" class="btn">Remove</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
