@@ -4,7 +4,6 @@ import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.tuples.Tuple2;
 import io.smallrye.mutiny.tuples.Tuple4;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +17,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import java.time.Duration;
 import java.util.List;
@@ -27,6 +28,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedQueries(value = {@NamedQuery(name = "ShoppingCart.findAll",
+        query = "SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems item INNER JOIN FETCH item.product"),
+        @NamedQuery(name = "ShoppingCart.getById",
+                query = "SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems where c.id = ?1")})
 public class ShoppingCart extends PanacheEntityBase {
 
     @Id
@@ -46,32 +51,16 @@ public class ShoppingCart extends PanacheEntityBase {
         cartTotal = cartItems.stream().mapToInt(ShoppingCartItem::getQuantity).sum();
     }
 
-    public static Multi<ShoppingCart> findAllWithJoinFetch() {
-        return stream("SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems");
+    public static Uni<ShoppingCart> findByShoppingCartId(Long id) {
+        return find("#ShoppingCart.getById", id).firstResult();
     }
 
-    public static Uni<ShoppingCart> findByShoppingCartId(Long id) {
+    public static Uni<List<ShoppingCart>> getAllShoppingCarts() {
+        return find("#ShoppingCart.findAll").list();
+    }
 
-        Uni<ShoppingCart> cart = ShoppingCart.findById(id);
-        Uni<Set<ShoppingCartItem>> cartItemsUni = cart
-                .chain(shoppingCart -> Mutiny.fetch(shoppingCart.cartItems)).onFailure().recoverWithNull();
-        Uni<Tuple2<ShoppingCart, Set<ShoppingCartItem>>> responses = Uni.combine()
-                .all().unis(cart, cartItemsUni).asTuple();
-
-        return Panache
-                .withTransaction(() -> responses.onItem().ifNotNull().transform(objects -> {
-
-                    if (objects.getItem1() == null) {
-                        return null;
-                    }
-                    return ShoppingCart.builder()
-                            .id(objects.getItem1().id)
-                            .name(objects.getItem1().name)
-                            .cartTotal(objects.getItem1().cartTotal)
-                            .cartItems(objects.getItem2())
-                            .build();
-                }));
-
+    public static Multi<ShoppingCart> findAllWithJoinFetch() {
+        return stream("SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems");
     }
 
     public static Uni<ShoppingCart> createShoppingCart(ShoppingCart shoppingCart) {
@@ -83,10 +72,6 @@ public class ShoppingCart extends PanacheEntityBase {
                 .fail()
                 .onFailure()
                 .transform(t -> new IllegalStateException(t));
-    }
-
-    public static Uni<List<ShoppingCart>> getAllShoppingCarts() {
-        return ShoppingCart.findAllWithJoinFetch().collect().asList();
     }
 
     public static Uni<ShoppingCart> addProductToShoppingCart(Long shoppingCartId, Long productId) {

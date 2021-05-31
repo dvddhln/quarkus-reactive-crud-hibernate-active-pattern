@@ -4,6 +4,9 @@ within quarkus. It relies on a postgres sql database and presents a shopping car
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
+It demonstrates lazy fetch association patterns with the mutiny fetch, ofcourse this isn’t necessary if you fetch the association eagerly.
+
+
 
 ###  Run Postgres docker container
 
