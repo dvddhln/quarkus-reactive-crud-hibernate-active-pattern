@@ -1,6 +1,3 @@
-myapp:
-  flyway:
-    migrate: true
 quarkus:
   log:
     level: INFO

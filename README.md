@@ -6,7 +6,10 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 It demonstrates lazy fetch association patterns with the mutiny fetch, ofcourse this isn’t necessary if you fetch the association eagerly.
 
+This project is presented in the following article
 
+
+[Creating a CRUD shopping service with Quarkus, Hibernate Reactive ORM Panache and PostgreSQL using Active Record Pattern](https://dvddhln.medium.com/creating-a-crud-shopping-service-with-quarkus-hibernate-orm-panache-and-postgresql-using-active-41a755693f12)
 
 ###  Run Postgres docker container
 

@@ -29,9 +29,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @NamedQueries(value = {@NamedQuery(name = "ShoppingCart.findAll",
-        query = "SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems item INNER JOIN FETCH item.product"),
+        query = "SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems item LEFT JOIN FETCH item.product"),
         @NamedQuery(name = "ShoppingCart.getById",
-                query = "SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems where c.id = ?1")})
+                query = "SELECT c FROM ShoppingCart c LEFT JOIN FETCH c.cartItems item LEFT JOIN FETCH item.product where c.id = ?1")})
 public class ShoppingCart extends PanacheEntityBase {
 
     @Id
