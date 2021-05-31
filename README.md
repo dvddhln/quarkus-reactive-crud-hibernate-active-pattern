@@ -59,31 +59,66 @@ Located at http://localhost:8080
 
     ./mvnw package -Pnative -Dquarkus.native.container-build=true
     
-### Example response
-    {
-      "cartItems": [
-        {
-          "product": {
-            "createdAt": "2021-05-31T06:07:16Z",
-            "description": "description",
-            "id": 4,
-            "title": "Product4",
-            "updatedAt": "2021-05-31T06:07:16Z"
+### Example response GET All Carts
+    [
+      {
+        "cartItems": [
+          {
+            "product": {
+              "createdAt": "2021-05-31T06:11:14Z",
+              "description": "description",
+              "id": 2,
+              "title": "Product2",
+              "updatedAt": "2021-05-31T06:11:14Z"
+            },
+            "quantity": 1
           },
-          "quantity": 1
-        },
-        {
-          "product": {
-            "createdAt": "2021-05-31T06:07:16Z",
-            "description": "description",
-            "id": 3,
-            "title": "Product3",
-            "updatedAt": "2021-05-31T06:07:16Z"
+          {
+            "product": {
+              "createdAt": "2021-05-31T06:11:14Z",
+              "description": "description",
+              "id": 1,
+              "title": "Product1",
+              "updatedAt": "2021-05-31T06:11:14Z"
+            },
+            "quantity": 2
+          }
+        ],
+        "cartTotal": 3,
+        "id": 1,
+        "name": "MyCart"
+      },
+      {
+        "cartItems": [
+          {
+            "product": {
+              "createdAt": "2021-05-31T06:11:14Z",
+              "description": "description",
+              "id": 2,
+              "title": "Product2",
+              "updatedAt": "2021-05-31T06:11:14Z"
+            },
+            "quantity": 1
           },
-          "quantity": 8
-        }
-      ],
-      "cartTotal": 9,
-      "id": 1,
-      "name": "MyCart"
-    }
+          {
+            "product": {
+              "createdAt": "2021-05-31T06:11:14Z",
+              "description": "description",
+              "id": 1,
+              "title": "Product1",
+              "updatedAt": "2021-05-31T06:11:14Z"
+            },
+            "quantity": 2
+          }
+        ],
+        "cartTotal": 3,
+        "id": 1,
+        "name": "MyCart"
+      },
+      {
+        "cartItems": [],
+        "cartTotal": 0,
+        "id": 2,
+        "name": "myCart"
+      }
+    ]
